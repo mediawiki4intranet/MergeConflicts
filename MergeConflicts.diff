@@ -1,7 +1,7 @@
 # HG changeset patch
 # User Vitaliy Filippov <vitalif@yourcmc.ru>
 # Date 1305543178 -14400
-Bug 80143 - Extension patch for changing merge conflict display style
+Bug 80143 - Extension patch for changing merge conflict display style (MW 1.16)
 
 diff -r 45da8fc662c9 -r b4f98861c052 includes/DefaultSettings.php
 --- includes/DefaultSettings.php

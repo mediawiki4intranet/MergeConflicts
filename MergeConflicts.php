@@ -70,7 +70,6 @@ if ( defined( 'MW_PATCH_MERGE_CONFLICTS' ) )
 {
     $wgHooks['EditPageBeforeConflictDiff'][] = 'wfShowMergeConflicts';
     $wgExtensionMessagesFiles['MergeConflicts'] = dirname(__FILE__).'/MergeConflicts.i18n.php';
-    $wgExtensionFunctions[] = 'wfSetupMergeConflicts';
 }
 elseif ( !$_SERVER['SERVER_NAME'] )
 {
@@ -79,11 +78,6 @@ elseif ( !$_SERVER['SERVER_NAME'] )
     die( 'ATTENTION! MergeConflicts extension patch is not applied to this MediaWiki installation.
 Please apply it before using this extension with the following command:
 patch -d "'.$IP.'" -p0 < "'.dirname(__FILE__).'/MergeConflicts.diff"'."\n" );
-}
-
-function wfSetupMergeConflicts()
-{
-    wfLoadExtensionMessages( 'MergeConflicts' );
 }
 
 function wfParseDiff3( $merged )
