@@ -272,6 +272,7 @@ function wfShowMergeConflicts( $editpage, $out )
     $html = wfFormatDiff3Conflicts( $conflicts );
     $out->addHeadItem( 'mergeconflicts-css',
 '<style type="text/css">
+.diff3_table { width: 100%; }
 .diff3_table td { white-space: pre-wrap; font-family: monospace; vertical-align: top; }
 .diff3_context td { background-color: #e0e0e0; }
 .diff3_mine { background-color: #ffcccc; }
