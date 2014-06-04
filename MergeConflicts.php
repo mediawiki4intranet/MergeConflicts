@@ -88,15 +88,17 @@ function wfParseDiff3($merged)
     $postcontext = $mine = $old = $their = NULL;
     $lineno = array(0, 0, 0);
     $m_mine = '<<<<<<< '.wfMsg('merge-mine');
-    $m_empty_mine = '<<<<<<< '.wfMsg('merge-old');
     $m_old = '||||||| '.wfMsg('merge-old');
     $m_their = '>>>>>>> '.wfMsg('merge-their');
     foreach ($lines as $line)
     {
-        if (trim($line) == $m_mine)
+        $t = trim($line);
+        if ($t == $m_mine)
         {
+            // Begin conflict
             if ($postcontext !== NULL)
             {
+                // Save previous conflict
                 $conflicts[] = array(
                     'line'  => $conflictline,
                     'pre'   => $precontext,
@@ -112,40 +114,21 @@ function wfParseDiff3($merged)
             $mine = array();
             $to = &$mine;
         }
-        elseif (trim($line) == $m_empty_mine)
+        elseif ($t == $m_old)
         {
-            if ($postcontext !== NULL)
-            {
-                $conflicts[] = array(
-                    'line'  => $conflictline,
-                    'pre'   => $precontext,
-                    'mine'  => $mine,
-                    'old'   => $old,
-                    'their' => $their,
-                    'post'  => $postcontext,
-                );
-                $postcontext = $mine = $old = $their = NULL;
-                $precontext = array();
-            }
-            // diff3 emits "<<< old ... === ... >>> (their)" when '<<< my' is empty
-            // instead of "<<< mine ||| old === ... >>> (their)".
-            $conflictline = $lineno;
-            $mine = array();
+            // Begin "old"
             $old = array();
             $to = &$old;
         }
-        elseif (trim($line) == $m_old)
+        elseif ($t == '=======' && $old !== NULL)
         {
-            $old = array();
-            $to = &$old;
-        }
-        elseif (trim($line) == '=======' && $old !== NULL)
-        {
+            // Begin "theirs"
             $their = array();
             $to = &$their;
         }
-        elseif (trim($line) == $m_their)
+        elseif ($t == $m_their && isset($to))
         {
+            // End conflict
             $postcontext = array();
             unset($to);
             $lineno[0] += count($mine);
@@ -160,6 +143,7 @@ function wfParseDiff3($merged)
             }
             else
             {
+                // Line outside the conflict
                 $lineno[0]++;
                 $lineno[1]++;
                 $lineno[2]++;
