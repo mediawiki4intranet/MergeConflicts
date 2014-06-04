@@ -66,36 +66,36 @@ $wgExtensionCredits['other'][] = array(
     'description'    => 'Allows 3-column edit conflict display and swaps editboxes on conflict',
 );
 
-if ( defined( 'MW_PATCH_MERGE_CONFLICTS' ) )
+if (defined('MW_PATCH_MERGE_CONFLICTS'))
 {
     $wgHooks['EditPageBeforeConflictDiff'][] = 'wfShowMergeConflicts';
     $wgExtensionMessagesFiles['MergeConflicts'] = dirname(__FILE__).'/MergeConflicts.i18n.php';
 }
-elseif ( !$_SERVER['SERVER_NAME'] )
+elseif (!$_SERVER['SERVER_NAME'])
 {
     /* Refuse to work if MW_PATCH_MERGE_CONFLICTS is not defined,
        which means our patch is not applied to this installation */
-    die( 'ATTENTION! MergeConflicts extension patch is not applied to this MediaWiki installation.
+    die('ATTENTION! MergeConflicts extension patch is not applied to this MediaWiki installation.
 Please apply it before using this extension with the following command:
-patch -d "'.$IP.'" -p0 < "'.dirname(__FILE__).'/MergeConflicts.diff"'."\n" );
+patch -d "'.$IP.'" -p0 < "'.dirname(__FILE__).'/MergeConflicts.diff"'."\n");
 }
 
-function wfParseDiff3( $merged )
+function wfParseDiff3($merged)
 {
-    $lines = explode( "\n", $merged );
+    $lines = explode("\n", $merged);
     $conflicts = array();
     $precontext = array();
     $postcontext = $mine = $old = $their = NULL;
-    $lineno = array( 0, 0, 0 );
-    $m_mine = '<<<<<<< '.wfMsg( 'merge-mine' );
-    $m_empty_mine = '<<<<<<< '.wfMsg( 'merge-old' );
-    $m_old = '||||||| '.wfMsg( 'merge-old' );
-    $m_their = '>>>>>>> '.wfMsg( 'merge-their' );
-    foreach ( $lines as $line )
+    $lineno = array(0, 0, 0);
+    $m_mine = '<<<<<<< '.wfMsg('merge-mine');
+    $m_empty_mine = '<<<<<<< '.wfMsg('merge-old');
+    $m_old = '||||||| '.wfMsg('merge-old');
+    $m_their = '>>>>>>> '.wfMsg('merge-their');
+    foreach ($lines as $line)
     {
-        if ( trim( $line ) == $m_mine )
+        if (trim($line) == $m_mine)
         {
-            if ( $postcontext !== NULL )
+            if ($postcontext !== NULL)
             {
                 $conflicts[] = array(
                     'line'  => $conflictline,
@@ -112,9 +112,9 @@ function wfParseDiff3( $merged )
             $mine = array();
             $to = &$mine;
         }
-        elseif ( trim( $line ) == $m_empty_mine )
+        elseif (trim($line) == $m_empty_mine)
         {
-            if ( $postcontext !== NULL )
+            if ($postcontext !== NULL)
             {
                 $conflicts[] = array(
                     'line'  => $conflictline,
@@ -134,37 +134,39 @@ function wfParseDiff3( $merged )
             $old = array();
             $to = &$old;
         }
-        elseif ( trim( $line ) == $m_old )
+        elseif (trim($line) == $m_old)
         {
             $old = array();
             $to = &$old;
         }
-        elseif ( trim( $line ) == '=======' && $old !== NULL )
+        elseif (trim($line) == '=======' && $old !== NULL)
         {
             $their = array();
             $to = &$their;
         }
-        elseif ( trim( $line ) == $m_their )
+        elseif (trim($line) == $m_their)
         {
             $postcontext = array();
-            unset( $to );
-            $lineno[0] += count( $mine );
-            $lineno[1] += count( $old );
-            $lineno[2] += count( $their );
+            unset($to);
+            $lineno[0] += count($mine);
+            $lineno[1] += count($old);
+            $lineno[2] += count($their);
         }
         else
         {
-            if ( isset( $to ) )
+            if (isset($to))
+            {
                 $to[] = $line;
+            }
             else
             {
                 $lineno[0]++;
                 $lineno[1]++;
                 $lineno[2]++;
-                if ( $postcontext !== NULL )
+                if ($postcontext !== NULL)
                 {
                     $postcontext[] = $line;
-                    if ( count( $postcontext ) >= 3 )
+                    if (count($postcontext) >= 3)
                     {
                         $conflicts[] = array(
                             'line'  => $conflictline,
@@ -181,13 +183,16 @@ function wfParseDiff3( $merged )
                 else
                 {
                     $precontext[] = $line;
-                    if ( count( $precontext ) > 3 )
-                        array_shift( $precontext );
+                    if (count($precontext) > 3)
+                    {
+                        array_shift($precontext);
+                    }
                 }
             }
         }
     }
-    if ( $postcontext !== NULL )
+    if ($postcontext !== NULL)
+    {
         $conflicts[] = array(
             'line'  => $conflictline,
             'pre'   => $precontext,
@@ -196,17 +201,18 @@ function wfParseDiff3( $merged )
             'their' => $their,
             'post'  => $postcontext,
         );
+    }
     return $conflicts;
 }
 
-function wfFormatDiff3Conflicts( $conflicts )
+function wfFormatDiff3Conflicts($conflicts)
 {
     // Table header
     $html =
         '<tr><th colspan="2">'.wfMsg('yourtext').
         '</th><th colspan="2">'.wfMsg('basetext').
         '</th><th colspan="2">'.wfMsg('storedversion').'</th></tr>';
-    foreach ( $conflicts as $conflict )
+    foreach ($conflicts as $conflict)
     {
         // Conflict header
         $html .= '<tr><th colspan="2" style="text-align: left">'.
@@ -216,61 +222,71 @@ function wfFormatDiff3Conflicts( $conflicts )
             '</th><th colspan="2" style="text-align: left">'.
             wfMsg('lineno', $conflict['line'][2]+1-count($conflict['pre'])).
             '</th></tr>';
-        $lines = max( count( $conflict['mine'] ), count( $conflict['old'] ), count( $conflict['their'] ) );
-        $lines_with_context = count( $conflict['pre'] ) + count( $conflict[ 'post' ] ) + $lines;
+        $lines = max(count($conflict['mine']), count($conflict['old']), count($conflict['their']));
+        $lines_with_context = count($conflict['pre']) + count($conflict[ 'post' ]) + $lines;
         $tr = array();
         // Pre-context
-        foreach ( $conflict['pre'] as $i => $str )
+        foreach ($conflict['pre'] as $i => $str)
         {
-            $str = htmlspecialchars( $str );
-            if ( $str == '' )
+            $str = htmlspecialchars($str);
+            if ($str == '')
+            {
                 $str = '&nbsp;';
+            }
             $str = "<td>$str</td>";
-            $tr[] = array( ' class="diff3_context"', $str, $str, $str );
+            $tr[] = array(' class="diff3_context"', $str, $str, $str);
         }
         // Conflicting lines
-        for ( $i = 0; $i < $lines; $i++ )
+        for ($i = 0; $i < $lines; $i++)
         {
-            $mine = htmlspecialchars( isset( $conflict['mine'][$i] ) ? $conflict['mine'][$i] : '' );
-            $old = htmlspecialchars( isset( $conflict['old'][$i] ) ? $conflict['old'][$i] : '' );
-            $their = htmlspecialchars( isset( $conflict['their'][$i] ) ? $conflict['their'][$i] : '' );
-            if ( $mine == '' && $old == '' && $their == '' )
+            $mine = htmlspecialchars(isset($conflict['mine'][$i]) ? $conflict['mine'][$i] : '');
+            $old = htmlspecialchars(isset($conflict['old'][$i]) ? $conflict['old'][$i] : '');
+            $their = htmlspecialchars(isset($conflict['their'][$i]) ? $conflict['their'][$i] : '');
+            if ($mine == '' && $old == '' && $their == '')
+            {
                 $mine = '&nbsp;';
-            $tr[] = array( '',
+            }
+            $tr[] = array('',
                 "<td class='diff3_mine'>$mine</td>",
                 "<td class='diff3_old'>$old</td>",
                 "<td class='diff3_their'>$their</td>",
             );
         }
         // Post-context
-        foreach ( $conflict['post'] as $str )
+        foreach ($conflict['post'] as $str)
         {
             $str = htmlspecialchars($str);
-            if ( $str == '' )
+            if ($str == '')
+            {
                 $str = '&nbsp;';
+            }
             $str = "<td>$str</td>";
             $tr[] = array(' class="diff3_context"', $str, $str, $str);
         }
         // Add spanned cells for margins into the first row
         $str = '<th rowspan="'.$lines_with_context.'" class="diff3_pad"></th>';
-        $tr[0] = array( $tr[0][0], $str, $tr[0][1], $str, $tr[0][2], $str, $tr[0][3] );
-        foreach ( $tr as $t )
+        $tr[0] = array($tr[0][0], $str, $tr[0][1], $str, $tr[0][2], $str, $tr[0][3]);
+        foreach ($tr as $t)
+        {
             $html .= '<tr'.array_shift($t).'>'.implode('', $t).'</tr>';
+        }
     }
     $html = "<table class='diff3_table'>$html</table>";
     return $html;
 }
 
-function wfShowMergeConflicts( $editpage, $out )
+function wfShowMergeConflicts($editpage, $out)
 {
     global $wgDiff3;
-    if ( !$editpage->mMergeAvailable )
+    if (!$editpage->mMergeAvailable)
+    {
         return true;
-    $out->wrapWikiMsg( '<h2>$1</h2>', "yourdiff" );
+    }
+    $out->wrapWikiMsg('<h2>$1</h2>', "yourdiff");
 
-    $conflicts = wfParseDiff3( $editpage->textbox1 );
-    $html = wfFormatDiff3Conflicts( $conflicts );
-    $out->addHeadItem( 'mergeconflicts-css',
+    $conflicts = wfParseDiff3($editpage->textbox1);
+    $html = wfFormatDiff3Conflicts($conflicts);
+    $out->addHeadItem('mergeconflicts-css',
 '<style type="text/css">
 .diff3_table { width: 100%; }
 .diff3_table td { white-space: pre-wrap; font-family: monospace; vertical-align: top; }
@@ -280,9 +296,9 @@ function wfShowMergeConflicts( $editpage, $out )
 .diff3_their { background-color: #ffffaa; }
 .diff3_pad { width: 1em; }
 </style>');
-    $out->addHTML( $html );
+    $out->addHTML($html);
 
-    $out->wrapWikiMsg( '<h2>$1</h2>', "storedversion" );
+    $out->wrapWikiMsg('<h2>$1</h2>', "storedversion");
     $editpage->textbox2 = $editpage->getContent();
     $editpage->showTextbox2();
 
