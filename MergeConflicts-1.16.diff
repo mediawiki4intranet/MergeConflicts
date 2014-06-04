@@ -4,8 +4,8 @@
 Bug 80143 - Extension patch for changing merge conflict display style (MW 1.16)
 
 diff -r 45da8fc662c9 -r b4f98861c052 includes/DefaultSettings.php
---- includes/DefaultSettings.php
-+++ includes/DefaultSettings.php
+--- a/includes/DefaultSettings.php
++++ b/includes/DefaultSettings.php
 @@ -4357,3 +4357,5 @@
   */
  $wgOldChangeTagsIndex = false;
@@ -13,8 +13,8 @@ diff -r 45da8fc662c9 -r b4f98861c052 includes/DefaultSettings.php
 +/** Defines that MergeConflicts extension patch was applied to this MW installation */
 +define ( 'MW_PATCH_MERGE_CONFLICTS', 1 );
 diff -r 45da8fc662c9 -r b4f98861c052 includes/EditPage.php
---- includes/EditPage.php
-+++ includes/EditPage.php
+--- a/includes/EditPage.php
++++ b/includes/EditPage.php
 @@ -948,12 +948,15 @@
  			$text = $this->textbox1; // do not try to merge here!
  		} else if ( $this->isConflict ) {
@@ -85,8 +85,8 @@ diff -r 45da8fc662c9 -r b4f98861c052 includes/EditPage.php
  		}
  	}
 diff -r 45da8fc662c9 -r b4f98861c052 includes/GlobalFunctions.php
---- includes/GlobalFunctions.php
-+++ includes/GlobalFunctions.php
+--- a/includes/GlobalFunctions.php
++++ b/includes/GlobalFunctions.php
 @@ -1487,7 +1487,7 @@
  	# case of broken installations.
  	if( !$wgDiff3 || !file_exists( $wgDiff3 ) ) {

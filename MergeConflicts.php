@@ -1,7 +1,7 @@
 <?php
 
 /* MergeConflicts extension
- * Copyright (c) 2011, Vitaliy Filippov <vitalif[d.o.g]mail.ru>
+ * Copyright (c) 2011+, Vitaliy Filippov <vitalif[d.o.g]mail.ru>
  * License: GPLv3.
  *
  * This program is free software; you can redistribute it and/or modify
@@ -60,7 +60,7 @@
 
 $wgExtensionCredits['other'][] = array(
     'name'           => 'MergeConflicts',
-    'version'        => '2011-05-16',
+    'version'        => '2014-06-04',
     'author'         => 'Vitaliy Filippov',
     'url'            => 'http://wiki.4intra.net/MergeConflicts',
     'description'    => 'Allows 3-column edit conflict display and swaps editboxes on conflict',
@@ -77,7 +77,7 @@ elseif (!$_SERVER['SERVER_NAME'])
        which means our patch is not applied to this installation */
     die('ATTENTION! MergeConflicts extension patch is not applied to this MediaWiki installation.
 Please apply it before using this extension with the following command:
-patch -d "'.$IP.'" -p0 < "'.dirname(__FILE__).'/MergeConflicts.diff"'."\n");
+patch -d "'.$IP.'" -p1 < "'.dirname(__FILE__).'/MergeConflicts.diff"'."\n");
 }
 
 function wfParseDiff3($merged)
@@ -87,6 +87,8 @@ function wfParseDiff3($merged)
     $precontext = array();
     $postcontext = $mine = $old = $their = NULL;
     $lineno = array(0, 0, 0);
+    // FIXME: These markers are not randomised, so it's possible to corrupt our output
+    // by putting them in article text manually...
     $m_mine = '<<<<<<< '.wfMsg('merge-mine');
     $m_old = '||||||| '.wfMsg('merge-old');
     $m_their = '>>>>>>> '.wfMsg('merge-their');
