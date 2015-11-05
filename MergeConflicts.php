@@ -285,7 +285,7 @@ function wfShowMergeConflicts($editpage, $out)
     $out->addHTML($html);
 
     $out->wrapWikiMsg('<h2>$1</h2>', "storedversion");
-    $editpage->textbox2 = $editpage->getContent();
+    $editpage->textbox2 = $editpage->getArticle()->getContent();
     $editpage->showTextbox2();
 
     return false;
